@@ -1,7 +1,9 @@
+using Brive.Bootcamp2.API.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +30,11 @@ namespace Brive.Bootcamp2.API
         {
 
             services.AddControllers();
+
+            services.AddDbContext<BootcampContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Brive.Bootcamp2.API", Version = "v1" });
@@ -38,6 +45,8 @@ namespace Brive.Bootcamp2.API
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             }));
+
+            services.AddTransient<IPersonRepository, PersonRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
