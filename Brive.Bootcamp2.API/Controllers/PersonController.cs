@@ -79,7 +79,7 @@ namespace Brive.Bootcamp2.API.Controllers
         [Route("{id}")]
         public ActionResult<bool> Deleted2Person(int id)
         {
-            return StatusCode(StatusCodes.Status200OK, true);
+            return StatusCode(StatusCodes.Status200OK, false);
         }
 
     }
