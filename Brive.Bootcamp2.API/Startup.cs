@@ -1,4 +1,5 @@
 using Brive.Bootcamp2.API.Repositories;
+using Brive.Bootcamp2.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -47,6 +48,7 @@ namespace Brive.Bootcamp2.API
             }));
 
             services.AddTransient<IPersonRepository, PersonRepository>();
+            services.AddTransient<IPersonService, PersonService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using Brive.Bootcamp2.API.Models;
+using Brive.Bootcamp2.API.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +15,11 @@ namespace Brive.Bootcamp2.API.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        public List<Person> persons = new List<Person>();
+        private IPersonService _personService;
 
-        public PersonController()
+        public PersonController(IPersonService personService)
         {
-            for (int i = 0; i <= 10; i++)
-            {
-                persons.Add(new Person
-                {
-                    Id = i + 1,
-                    Name = $"Persona {i + 1}",
-                    Age = 18 + i,
-                    Email = $"correo{i + 1}@correo.com",
-                    CreatedDate = DateTime.UtcNow
-                });
-            }
+            _personService = personService;
         }
 
         //apiBase/controlador/endpoint
@@ -36,50 +27,92 @@ namespace Brive.Bootcamp2.API.Controllers
         [Route("all")]
         public ActionResult<List<Person>> GetAllPersons()
         {
-            return StatusCode(StatusCodes.Status200OK, persons);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, _personService.GetAllPersons());
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
         public ActionResult<Person> GetPersonById(int id)
         {
-            return StatusCode(StatusCodes.Status200OK, persons.Where(person => person.Id == id).FirstOrDefault());
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, _personService.GetPersonById(id));
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         [HttpPost]
         //[Route("savePerson")]
         public ActionResult<Person> SavePerson([FromBody] Person person)
         {
-            return StatusCode(StatusCodes.Status200OK, person);
+            try
+            {
+                person.CreatedDate = DateTime.UtcNow;
+                return StatusCode(StatusCodes.Status200OK, _personService.SavePerson(person));
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         [HttpPut]
         //[Route("edited")]
         public ActionResult<Person> EditedPerson ([FromBody] Person person)
         {
-            Person editedPerson = persons.Where(x => x.Id == person.Id).FirstOrDefault();
-
-            if (editedPerson == null)
-                return StatusCode(StatusCodes.Status400BadRequest, editedPerson);
-
-            person.Name = "Nombre Editado";
-            person.Age = 28;
-            person.CreatedDate = editedPerson.CreatedDate;
-            person.Email = editedPerson.Email;
-            return StatusCode(StatusCodes.Status200OK, person);
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, _personService.EditedPerson(person));
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         [HttpDelete]
         public ActionResult<List<Person>> DeletedPerson([FromBody] int id)
         {
-            return StatusCode(StatusCodes.Status200OK, persons.Where(person => person.Id != id));
+            try
+            {
+                Person person = _personService.GetPersonById(id);
+                if(person == null)
+                    return StatusCode(StatusCodes.Status400BadRequest, null);
+                
+                return StatusCode(StatusCodes.Status200OK, _personService.DeletedPerson2(person));
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         [HttpDelete]
         [Route("{id}")]
         public ActionResult<bool> Deleted2Person(int id)
         {
-            return StatusCode(StatusCodes.Status200OK, false);
+            try
+            {
+                Person person = _personService.GetPersonById(id);
+                if (person == null)
+                    return StatusCode(StatusCodes.Status400BadRequest, false);
+
+                return StatusCode(StatusCodes.Status200OK, _personService.DeletedPerson(person));
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
     }

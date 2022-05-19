@@ -8,7 +8,6 @@ namespace Brive.Bootcamp2.API.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
-
         private readonly BootcampContext context;
 
         public PersonRepository(BootcampContext _context)
